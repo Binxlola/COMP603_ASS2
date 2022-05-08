@@ -27,15 +27,18 @@ public final class CreateFlightView extends PrimaryView {
     private JButton submitBtn, cancelBtn;
     private final Map<String, Map<JComponent, String>> formInputs;
     
-    public CreateFlightView() throws Exception {
+    public CreateFlightView() {
         super("Welcome to Airline Reservation Application");
         this.model = new CreateFlightModel();
         this.formInputs = new HashMap();
-        this.controller = new CreateFlightController(this, formInputs);
+        this.controller = new CreateFlightController(this);
     }
     
     @Override
     public void buildMainView() {
+        // Ensure only currently user input are stored
+        this.formInputs.clear();
+        
         this.setLayout(
             new BoxLayout(this, BoxLayout.PAGE_AXIS)
         );
@@ -54,7 +57,7 @@ public final class CreateFlightView extends PrimaryView {
             label.setMaximumSize(Constants.LABEL_X_SMALL);
             JComponent formInput = ("Plane Type").equals(k) ? 
                         new JComboBox(
-                                DBHelper.getInstance().findAllPlanes().toArray()
+                                ((CreateFlightModel) this.model).getPlanes().toArray()
                         ) : 
                         new JTextField(10);
             formInput.setName(k);
@@ -75,6 +78,10 @@ public final class CreateFlightView extends PrimaryView {
         if(!(this.model.getUserMessages().isEmpty())) {
             this.add(this.buildMessageViewPane());
         }
+    }
+    
+    public Map<String, Map<JComponent, String>> getFormInputs() {
+        return this.formInputs;
     }
 
     @Override
