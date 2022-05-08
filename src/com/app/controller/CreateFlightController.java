@@ -20,38 +20,56 @@ import org.hibernate.exception.ConstraintViolationException;
  */
 public class CreateFlightController extends Controller {
     
-    private final Map<String, Map<JComponent, String>> formInputs;
-    
-    public CreateFlightController(CreateFlightView view, Map<String, Map<JComponent, String>> formInputs) {
+    public CreateFlightController(CreateFlightView view) {
         super(view);
-        this.formInputs = formInputs;
+    }
+    
+    /**
+     * Helper method for validation of text field input
+     * @param textField The JTextField component to be validated
+     * @param pattern The pattern to be used in validation
+     */
+    private void validateTextField(ViewModel model, JTextField textField, String pattern) {
+        
+        if(pattern != null && !textField.getText().matches(pattern)) {
+            model.addUserMessage(
+                   UserMessage.ERROR.createLabel("Invalid Input for form field: " + textField.getName() + " using pattern '" + pattern + "'")
+            );
+        }
+    }
+    
+    /**
+     * Helper method for validation of a combo box input
+     * @param box The JComboBox to be validated
+     */
+    private void validateComboBox(ViewModel model, JComboBox box) {
+        
+        if(box.getSelectedItem() == null) {
+            model.addUserMessage(
+                UserMessage.ERROR.createLabel("Input field: " + box.getName() + " can not be left blank")
+            );
+        }
     }
     
      /**
      * Validates the form inputs required on a submit action
      * @return Returns wether the error array is empty or not
      */
-    private boolean validateFormInputs() {
-        // Rest user messages 
-        this.getView().getModel().clearUserMessages();
-        ViewModel model = this.getView().getModel();
+    private boolean validateFormInputs(ViewModel model, Map<String, Map<JComponent, String>> inputs) {
         
-        // Iterates multiple inputs and validates
-        this.formInputs.forEach((k, v) -> {
-            // iterates Single map for extra input data
-            v.forEach((input, validation) -> {
-                if(input instanceof JTextField && validation != null) {
-                    JTextField textField = (JTextField) input;
-                    if(!textField.getText().matches(validation)) {
-                        model.addUserMessage(
-                               UserMessage.ERROR.createLabel("Invalid Input for form field: " + input.getName() + " using pattern '" + validation + "'")
-                        );
-                    }
-                } else if(input instanceof JComboBox && ((JComboBox) input).getSelectedItem() == null) {
-                    model.addUserMessage(
-                           UserMessage.ERROR.createLabel("Input field: " + input.getName() + " can not be left blank")
-                    );
-                }
+        // Iterates multiple inputs and validates (Should be ONLY one inner iteration)
+        inputs.forEach((key, pair) -> {
+            pair.forEach((input, validation) -> {
+                if(input instanceof JTextField) this.validateTextField(
+                        model, 
+                        (JTextField) input, 
+                        validation
+                );
+                
+                if(input instanceof JComboBox) this.validateComboBox(
+                        model, 
+                        (JComboBox) input
+                );
             });
         });
         
@@ -65,17 +83,18 @@ public class CreateFlightController extends Controller {
      * Upon a successful save, user will be redirected to InitialNavigationView
      */
     private void submit() {
-        boolean isValid = validateFormInputs();
         ViewModel model = this.getView().getModel();
+        Map<String, Map<JComponent, String>> inputs = ((CreateFlightView) this.getView()).getFormInputs();
+        boolean isValid = validateFormInputs(model, inputs);
         
         // Input is valid we can submit
         if(isValid) {
             // Not the best way (but it works)
-            String flightNum = ((JTextField) this.formInputs.get("Flight Number").keySet().toArray()[0]).getText();
-            String depCity = ((JTextField) this.formInputs.get("Depature City").keySet().toArray()[0]).getText();
-            String arrCity = ((JTextField) this.formInputs.get("Arrival City").keySet().toArray()[0]).getText();
-            String depTime = ((JTextField) this.formInputs.get("Depature Time (hh:mm)").keySet().toArray()[0]).getText();
-            Plane plane = (Plane) ((JComboBox) this.formInputs.get("Plane Type").keySet().toArray()[0]).getSelectedItem();
+            String flightNum = ((JTextField) inputs.get("Flight Number").keySet().toArray()[0]).getText();
+            String depCity = ((JTextField) inputs.get("Depature City").keySet().toArray()[0]).getText();
+            String arrCity = ((JTextField) inputs.get("Arrival City").keySet().toArray()[0]).getText();
+            String depTime = ((JTextField) inputs.get("Depature Time (hh:mm)").keySet().toArray()[0]).getText();
+            Plane plane = (Plane) ((JComboBox) inputs.get("Plane Type").keySet().toArray()[0]).getSelectedItem();
             
             // Save the new Flight or add flight exists error and return
             try {

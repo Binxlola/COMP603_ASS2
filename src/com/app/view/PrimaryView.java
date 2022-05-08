@@ -60,6 +60,7 @@ public abstract class PrimaryView extends JPanel {
     public List<JComponent> getFooterComponents() {return this.footerComponents;}
     public String getHeader() {return this.header;}
     public ViewModel getModel() {return this.model;}
+    public ActionListener getController() {return this.controller;}
     
     public abstract void buildMainView();
     public abstract void buildFooterComponents();

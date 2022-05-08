@@ -1,6 +1,8 @@
 package com.app.model;
 
+import com.app.entities.plane.Plane;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,9 +16,11 @@ public class CreateFlightModel extends ViewModel {
     private final static String[] FORM_LABELS = {"Flight Number", "Depature City", "Arrival City", "Depature Time (hh:mm)", "Plane Type"};
     private final static String[] FORM_PATTERNS = {"[a-zA-Z]{2}[0-9]{3}", "[a-zA-Z]+", "[a-zA-Z]+", "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$", null};
     private final Map<String, String> inputs;
+    private final List<Plane> planes;
     
     public CreateFlightModel() {
         this.inputs = new LinkedHashMap();
+        this.planes = this.dbHelper.findAllPlanes();
         
         // Confirm we have matching number of labels to patterns
         if(FORM_LABELS.length == FORM_PATTERNS.length) {
@@ -41,5 +45,9 @@ public class CreateFlightModel extends ViewModel {
     
     public Map<String, String> getInputs() {
         return this.inputs;
+    }
+    
+    public List<Plane> getPlanes() {
+        return this.planes;
     }
 }
