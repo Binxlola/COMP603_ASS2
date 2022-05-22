@@ -9,7 +9,6 @@ import java.util.Map;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import org.junit.Before;
-import org.junit.After;
 import org.junit.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,11 +35,7 @@ public class CreateFlightControllerTest {
         this.model.clearUserMessages();
         this.view.update();
     }
-    
-    @After
-    public void tearDown() {
-    }
-    
+  
     /**
      * OVERRIDES the formInput structure initially built in the test view
      * @param flightStr The flight string to be set
