@@ -10,8 +10,8 @@ import java.util.List;
  */
 public class InitialNavigationModel extends ViewModel {
     
-    private final List<Flight> flights;
-    private final List<Plane> planes;
+    private List<Flight> flights;
+    private List<Plane> planes;
     
     public InitialNavigationModel() {
         super();
@@ -21,6 +21,12 @@ public class InitialNavigationModel extends ViewModel {
     }
     
     public List<Flight> getFlights() {return this.flights;}
+    public void setFlights(List<Flight> flights) {
+        this.flights = flights;
+    }
     public List<Plane> getPlanes() {return this.planes;}
+    public void setPlanes(List<Plane> planes) {
+        this.planes = planes;
+    }
 
 }
